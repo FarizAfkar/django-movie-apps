@@ -1,0 +1,419 @@
+{% load static %}
+<!doctype html>
+<html lang="en" data-bs-theme="auto">
+  <head>
+
+    <!-- Color Theme -->
+    <script src="{% static "js/color-modes.js" %}"></script>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Fariz Afkar">
+    <meta name="generator" content="Hugo 0.122.0">
+
+    <!-- Title -->
+    <title>
+      {% block title %}
+        {{ page_title|default:"Django Movie Apps" }}
+      {% endblock title %}
+    </title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/album/">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+
+      .b-example-divider {
+        width: 100%;
+        height: 3rem;
+        background-color: rgba(0, 0, 0, .1);
+        border: solid rgba(0, 0, 0, .15);
+        border-width: 1px 0;
+        box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+      }
+
+      .b-example-vr {
+        flex-shrink: 0;
+        width: 1.5rem;
+        height: 100vh;
+      }
+
+      .bi {
+        vertical-align: -.125em;
+        fill: currentColor;
+      }
+
+      .nav-scroller {
+        position: relative;
+        z-index: 2;
+        height: 2.75rem;
+        overflow-y: hidden;
+      }
+
+      .nav-scroller .nav {
+        display: flex;
+        flex-wrap: nowrap;
+        padding-bottom: 1rem;
+        margin-top: -1px;
+        overflow-x: auto;
+        text-align: center;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .btn-bd-primary {
+        --bd-violet-bg: #712cf9;
+        --bd-violet-rgb: 112.520718, 44.062154, 249.437846;
+
+        --bs-btn-font-weight: 600;
+        --bs-btn-color: var(--bs-white);
+        --bs-btn-bg: var(--bd-violet-bg);
+        --bs-btn-border-color: var(--bd-violet-bg);
+        --bs-btn-hover-color: var(--bs-white);
+        --bs-btn-hover-bg: #6528e0;
+        --bs-btn-hover-border-color: #6528e0;
+        --bs-btn-focus-shadow-rgb: var(--bd-violet-rgb);
+        --bs-btn-active-color: var(--bs-btn-hover-color);
+        --bs-btn-active-bg: #5a23c8;
+        --bs-btn-active-border-color: #5a23c8;
+      }
+
+      .bd-mode-toggle {
+        z-index: 1500;
+      }
+
+      .bd-mode-toggle .dropdown-menu .active .bi {
+        display: block !important;
+      }
+
+      .spanner{
+        position:absolute;
+        top: 50%;
+        left: 0;
+        background: #2a2a2a55;
+        width: 100%;
+        display:block;
+        text-align:center;
+        height: 300px;
+        color: #FFF;
+        transform: translateY(-50%);
+        z-index: 1000000;
+        visibility: hidden;
+      }
+
+      .overlay{
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        visibility: hidden;
+      }
+
+      .loader,
+      .loader:before,
+      .loader:after {
+        border-radius: 50%;
+        width: 2.5em;
+        height: 2.5em;
+        -webkit-animation-fill-mode: both;
+        animation-fill-mode: both;
+        -webkit-animation: load7 1.8s infinite ease-in-out;
+        animation: load7 1.8s infinite ease-in-out;
+      }
+
+      .loader {
+        color: #ffffff;
+        font-size: 10px;
+        margin: 80px auto;
+        position: relative;
+        text-indent: -9999em;
+        -webkit-transform: translateZ(0);
+        -ms-transform: translateZ(0);
+        transform: translateZ(0);
+        -webkit-animation-delay: -0.16s;
+        animation-delay: -0.16s;
+      }
+
+      .loader:before,
+      .loader:after {
+        content: '';
+        position: absolute;
+        top: 0;
+      }
+
+      .loader:before {
+        left: -3.5em;
+        -webkit-animation-delay: -0.32s;
+        animation-delay: -0.32s;
+      }
+
+      .loader:after {
+        left: 3.5em;
+      }
+
+      @-webkit-keyframes load7 {
+        0%,
+        80%,
+        100% {
+          box-shadow: 0 2.5em 0 -1.3em;
+        }
+        40% {
+          box-shadow: 0 2.5em 0 0;
+        }
+      }
+
+      @keyframes load7 {
+        0%,
+        80%,
+        100% {
+          box-shadow: 0 2.5em 0 -1.3em;
+        }
+        40% {
+          box-shadow: 0 2.5em 0 0;
+        }
+      }
+
+      .show{
+        visibility: visible;
+      }
+
+      .spanner, .overlay{
+        opacity: 0;
+        -webkit-transition: all 0.3s;
+        -moz-transition: all 0.3s;
+        transition: all 0.3s;
+      }
+
+      .spanner.show, .overlay.show {
+        opacity: 1
+      }
+
+      .bi{
+        vertical-align: text-bottom;
+      }
+
+      /* Button style */
+        #goTopBtn {
+          position: fixed;
+          bottom: 70px;
+          right: 20px;
+          display: none; /* Hidden by default */
+          cursor: pointer;
+          z-index: 10000;
+        }
+
+    </style>
+
+    {% block css %}
+    {% endblock css %}
+
+
+  </head>
+  <body>
+
+    <!-- Night Mode -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+      <symbol id="check2" viewBox="0 0 16 16">
+        <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+      </symbol>
+      <symbol id="circle-half" viewBox="0 0 16 16">
+        <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"/>
+      </symbol>
+      <symbol id="moon-stars-fill" viewBox="0 0 16 16">
+        <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
+        <path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z"/>
+      </symbol>
+      <symbol id="sun-fill" viewBox="0 0 16 16">
+        <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
+      </symbol>
+    </svg>
+
+    <div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3 bd-mode-toggle">
+      <button class="btn btn-bd-primary py-2 dropdown-toggle d-flex align-items-center"
+              id="bd-theme"
+              type="button"
+              aria-expanded="false"
+              data-bs-toggle="dropdown"
+              aria-label="Toggle theme (auto)">
+        <svg class="bi my-1 theme-icon-active" width="1em" height="1em"><use href="#circle-half"></use></svg>
+        <span class="visually-hidden" id="bd-theme-text">Toggle theme</span>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bd-theme-text">
+        <li>
+          <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="false">
+            <svg class="bi me-2 opacity-50" width="1em" height="1em"><use href="#sun-fill"></use></svg>
+            Light
+            <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
+          </button>
+        </li>
+        <li>
+          <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false">
+            <svg class="bi me-2 opacity-50" width="1em" height="1em"><use href="#moon-stars-fill"></use></svg>
+            Dark
+            <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
+          </button>
+        </li>
+        <li>
+          <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto" aria-pressed="true">
+            <svg class="bi me-2 opacity-50" width="1em" height="1em"><use href="#circle-half"></use></svg>
+            Auto
+            <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
+          </button>
+        </li>
+      </ul>
+    </div>
+    <!-- Night Mode -->
+
+    <!-- Navbar -->
+    <header data-bs-theme="dark">
+
+      {% if user.is_superuser %}
+        <div class="collapse text-bg-dark" id="navbarHeader">
+          <div class="container">
+            <div class="row">
+
+              <div class="col-sm-4 py-4">
+                <h4>MPAA Rating</h4>
+                <ul class="list-unstyled">
+                  <li><a href="{% url 'movies:list-mpaa-rating' %}" class="text-white"><i class="bi bi-slash"></i>Go to MPAA rating</a></li>
+                </ul>
+              </div>
+
+              <div class="col-sm-4 py-4">
+                <h4>Genre</h4>
+                <ul class="list-unstyled">
+                  <li><a href="{% url 'movies:list-genre' %}" class="text-white"><i class="bi bi-slash"></i>Go to Genre</a></li>
+                </ul>
+              </div>
+
+              <div class="col-sm-4 py-4">
+                <h4>Movie</h4>
+                <ul class="list-unstyled">
+                  <li><a href="{% url 'movies:create-movie' %}" class="text-white"><i class="bi bi-slash"></i>Go to Create</a></li>
+                  <li><a href="{% url 'movies:movies' %}" class="text-white"><i class="bi bi-slash"></i>Go to Movies</a></li>
+                </ul>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+      <div class="navbar navbar-dark bg-dark shadow-sm">
+        <div class="container">
+          <a href="/" class="navbar-brand d-flex align-items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-film mx-2" viewBox="0 0 16 16">
+              <path d="M0 1a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm4 0v6h8V1zm8 8H4v6h8zM1 1v2h2V1zm2 3H1v2h2zM1 7v2h2V7zm2 3H1v2h2zm-2 3v2h2v-2zM15 1h-2v2h2zm-2 3v2h2V4zm2 3h-2v2h2zm-2 3v2h2v-2zm2 3h-2v2h2z"/>
+            </svg>
+            <strong>GV Cinema</strong>
+          </a>
+
+          {% if user.is_superuser %}
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+          {% endif %}
+
+        </div>
+      </div>
+    </header>
+    <!-- Navbar -->
+
+    <!-- Main -->
+    <main>
+      {% include 'messages.html'%}
+      {% block content %}
+      {% endblock content %}
+    </main>
+    <!-- Main -->
+
+    <!-- Footer -->
+    <footer class="footer h-75">
+      <p class="m-3 p-3">© 2025. All rights reserved.</p>
+    </footer>
+    <!-- Footer -->
+
+    <!-- Go to Top Button -->
+    <button id="goTopBtn" class="btn btn-info rounded-circle opacity-75" title="Go to top"><i class="bi bi-caret-up-fill text-white"></i></button>
+
+    <!-- Form Overlay -->
+    <div id="loading" class="overlay spanner">
+      <div class="loader"></div>
+      <p>Operations is in progress please wait.</p>
+    </div>
+
+    <!-- JavaScript -->
+    {% block js %}
+      <script src="{% static 'js/jquery-3.7.1.min.js' %}" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+      <script src="{% static "js/bootstrap.bundle.min.js" %}"></script>
+      <script>
+        // Show the button when the user scrolls down 100px from the top of the document
+        window.onscroll = function() {
+          if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+            document.getElementById("goTopBtn").style.display = "block";  // Show the button
+          } else {
+            document.getElementById("goTopBtn").style.display = "none";  // Hide the button
+          }
+        };
+
+        // Scroll to the top of the page with smooth scrolling when the button is clicked
+        document.getElementById("goTopBtn").onclick = function() {
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth"  // Smooth scroll
+          });
+          return false; // Prevent the default action
+        };
+
+        // Select all buttons with id containing "closeBtn"
+        document.querySelectorAll('button[id*="closeBtnEP"]').forEach(function(button) {
+          button.addEventListener('click', function() {
+            history.go(-1); // Navigate back in history
+          });
+        });
+
+        // JavaScript to show all toasts
+        var toastElements = document.querySelectorAll('.toast');
+        toastElements.forEach(function(toast) {
+          var toastInstance = new bootstrap.Toast(toast);
+          toastInstance.show();
+        });
+
+        // Function to handle form submit overlay
+        document.querySelectorAll('form').forEach(function(form) {
+          form.addEventListener('submit', function() {
+            const loadingDiv = document.querySelector('div#loading');
+            if (loadingDiv) {
+              loadingDiv.classList.add('show');
+
+              // Hide the loading div after 5 seconds
+              setTimeout(function() {
+                loadingDiv.classList.remove('show');
+              }, 5000);
+            }
+          });
+        });
+      </script>
+    {% endblock js %}
+    <!-- JavaScript -->
+
+    </body>
+</html>

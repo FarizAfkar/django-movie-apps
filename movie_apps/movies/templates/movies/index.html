@@ -1,0 +1,293 @@
+{% extends 'movies/base.html' %}
+{% load static %}
+
+{% block css %}
+  <style>
+    .gotoDetails:hover {
+      transform: scale(1.05);  /* Slightly enlarge the card */
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+      cursor: pointer;
+    }
+    /* Optional: Add consistent height for the card image */
+    .card-img-top {
+      object-fit: cover; /* Ensures image covers the area without stretching */
+      height:450px; /* Set a fixed height for the image */
+    }
+    .card {
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .card.hidden {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+
+  </style>
+{% endblock css %}
+
+{% block content %}
+
+  <!-- Header -->
+  <section class="container-fluid text-center mt-3">
+    <div class="row py-lg-5">
+      <div class="col-lg-6 col-md-8 mx-auto">
+
+        <!-- Title -->
+        <h1 class="fw-light">Movie Listing @ GV Cinema</h1>
+        <p class="lead text-body-secondary">
+          Welcome to GV Cinema, your go-to place for the latest blockbusters and classic films.
+        </p>
+
+        <!-- Search Input -->
+        <form method="GET" class="ms-auto p-2 d-grid gap-2 d-md-flex justify-content-md-end">
+          <div class="input-group">
+            <input id="search" name="search" type="text" class="form-control border border-primary-subtle" placeholder="Search" aria-label="Search" aria-describedby="BtnSearch" value="{{request.GET.search}}">
+            <button class="btn btn-outline-primary" type="submit" id="BtnSearch">Seacrh</button>
+          </div>
+          <button class="btn btn-outline-danger" type="submit" id="btn-reset-search" style="display:none;"><i class="bi bi-x-lg"></i></button>
+        </form>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Content -->
+  <div class="album py-5 px-4 bg-body-tertiary">
+    <div class="container-fluid" style="min-height:900px">
+
+      <!-- Title -->
+      <div class="border-3 border-bottom pb-3 mb-3">
+        <h1>Popular Movies this month</h1>
+      </div>
+
+      <!-- Movies Thumbnail -->
+      <div id="movies-list" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-3">
+        {% for movie in movies %}
+          <div class="col p-3">
+            <div class="card shadow-sm gotoDetails h-100" id="{{movie.id}}-{{movie.name}}" data-name="{{movie.name|lower}}">
+
+              <!-- Thumbnail -->
+              <input type="hidden" id="url-{{movie.id}}-{{movie.name}}" value="{% url 'movies:detail-movie' movie.id movie.name %}">
+              <img src="{{movie.imgPath.url}}" class="bd-placeholder-img card-img-top img-fluid" alt="{{movie.name}}">
+
+              <!-- Info -->
+              <div class="card-body d-flex flex-column">
+                <div class="d-flex">
+                  <h3 class="card-text">{{movie.name}}</h3>
+                </div>
+                <div class="d-flex justify-content-between mt-auto">
+                  <small class="text-body-secondary">User Rating: {{movie.userRating}}</small>
+                  <small class="text-body-secondary">{{movie.duration}} mins</small>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- No Results -->
+      <div id="no-results" class="text-center text-muted mt-4" style="display: none;">
+        <div class="alert" role="alert">
+          <h4 class="alert-heading"><i class="bi bi-search"></i> No movies found ...</h4>
+          <p class="h6 bold">We're sorry, try again with another keyword.</p>
+          <hr>
+          <p class="mb-0">GV Cinema</p>
+        </div>
+      </div>
+
+      <!-- Loading More Movie -->
+      <div id="loading-search" class="justify-content-center align-items-center" style="display: none;">
+        <div class="spinner-grow" style="width: 1.5rem; height: 1.5rem;" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="h4 my-auto mx-2">Loading more movies...</p>
+      </div>
+
+    </div>
+  </div>
+{% endblock content %}
+
+
+{% block js %}
+  {{block.super}}
+    <script>
+      let page = {{ movies.number }}; // Current page number
+      let isLoading = false; // Flag loading requests
+      let hasMore = {{ movies.has_next|lower }}; // Flag more pages to load
+      const moviesList = document.getElementById('movies-list');
+      const loading = document.getElementById('loading-search');
+
+      // Function to Loads more movies from the server and appends them to the movies list
+      function loadMoreMovies(searchTerm, callback) {
+        // If already loading or no more pages, exit
+        if (isLoading || !hasMore) {
+          if (callback) {
+            callback();
+          }
+          return;
+        }
+
+        isLoading = true; // Set loading flag to true
+        loading.style.display = 'flex'; // Show the loading indicator
+        page++; // Increment the page number
+
+        // Construct the URL for the next page
+        const url = new URL(window.location.href);
+        url.searchParams.set('page', page);
+        if (searchTerm) { // Add the search term to the URL if it exists
+          url.searchParams.set('search', searchTerm);
+        }
+
+        // Fetch the next page of movies
+        fetch(url)
+          .then(response => response.text()) // Get the HTML response as text
+          .then(html => {
+            const tempDiv = document.createElement('div'); // Create a temporary div
+            tempDiv.innerHTML = html; // Set the HTML content of the temporary div
+            const newMovies = tempDiv.querySelectorAll('#movies-list .col'); // Select the new movie cards
+            newMovies.forEach(movie => moviesList.appendChild(movie)); // Append the new movie cards to the list
+
+            isLoading = false; // Reset loading flag
+            loading.style.display = 'none'; // Hide the loading indicator
+
+            // Check if there are more pages to load
+            const newPage = tempDiv.querySelector('input[name="page"]');
+            if (!newPage) {
+              hasMore = false; // No more pages if the page input is not found
+            } else {
+              // Check if the next page button is enabled
+              hasMore = tempDiv.querySelector('.pagination .page-item.active').nextElementSibling &&
+                      !tempDiv.querySelector('.pagination .page-item.active').nextElementSibling.classList.contains('disabled');
+            }
+            filterMovies(); // Reapply the filter after loading more movies
+            if (callback) {
+              callback();
+            }
+          })
+          .catch(error => {
+            // Handle errors during fetching
+            console.error('Error loading more movies:', error);
+            isLoading = false;
+            loading.style.display = 'none';
+            if (callback) {
+              callback();
+            }
+          });
+      }
+
+      // Checks if the user has scrolled to the bottom of the page.
+      function isAtBottom() {
+        return window.innerHeight + window.scrollY >= document.body.offsetHeight - 200;
+      }
+
+      // Event listener for the scroll event
+      window.addEventListener('scroll', () => {
+        if (isAtBottom()) {
+          const searchTerm = document.getElementById('search').value.toLowerCase();
+          loadMoreMovies(searchTerm);
+        }
+      });
+
+      // Function to filter the movie cards based on search input
+      function filterMovies() {
+        const searchTerm = document.getElementById('search').value.toLowerCase();
+        const movieCards = document.querySelectorAll('#movies-list .gotoDetails');
+        const resetButton = document.getElementById('btn-reset-search');
+        const noResults = document.getElementById('no-results');
+
+        let anyVisible = false;
+
+        movieCards.forEach(card => {
+          const movieName = card.dataset.name;
+
+          if (movieName.includes(searchTerm)) {
+            card.parentElement.style.display = ''; // Show the column wrapper
+            card.classList.remove('hidden');
+            anyVisible = true;
+          } else {
+            card.classList.add('hidden');          // Smooth fade-out
+            setTimeout(() => {
+              card.parentElement.style.display = 'none'; // Hide completely after fade
+            }, 300); // Match with CSS transition
+          }
+        });
+
+        // Show or hide the reset button
+        resetButton.style.display = searchTerm ? 'inline-block' : 'none';
+
+        // Show or hide the "no results" message
+        if (hasMore) {
+          loadMoreMovies(searchTerm, () => {
+            // After loading, check visibility and show/hide "no results"
+            if (!anyVisibleAfterLoad(searchTerm)) {
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+            }
+          });
+        } else {
+          // If no more pages, check current visibility
+          if (!anyVisible) {
+            noResults.style.display = 'block';
+          } else {
+            noResults.style.display = 'none';
+          }
+        }
+      }
+
+      // Function to check visibility after load
+      function anyVisibleAfterLoad(searchTerm) {
+        const movieCards = document.querySelectorAll('#movies-list .gotoDetails');
+        for (let card of movieCards) {
+          const movieName = card.dataset.name;
+          if (movieName.includes(searchTerm) && card.parentElement.style.display !== 'none') {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      // Debounce to avoid excessive filtering
+      let debounceTimer;
+      function debouncedFilterMovies() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(filterMovies, 300);
+      }
+
+      // If there's a search param on page load, apply filter
+      function checkSearchParam() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchParam = urlParams.get('search');
+
+        if (searchParam) {
+          const searchInput = document.getElementById('search');
+          searchInput.value = searchParam;
+          filterMovies();
+          document.getElementById('btn-reset-search').style.display = 'inline-block';
+        }
+      }
+
+      // Event listeners
+      document.getElementById('search').addEventListener('input', debouncedFilterMovies);
+      document.getElementById('btn-reset-search').addEventListener('click', function () {
+        document.getElementById('search').value = '';
+        filterMovies();
+      });
+
+      // Click event for movie cards
+      document.addEventListener('click', function (event) {
+        const card = event.target.closest('.gotoDetails');
+        if (card) {
+          const elementId = card.id;
+          const url = document.getElementById('url-' + elementId).value;
+          window.location.href = url;
+        }
+      });
+
+      // Run on page load
+      window.onload = function () {
+        checkSearchParam();
+      };
+
+    </script>
+{% endblock js %}

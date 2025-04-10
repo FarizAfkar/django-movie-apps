@@ -1,0 +1,269 @@
+{% extends 'movies/base.html' %}
+{% load static %}
+
+{% block css %}
+{% endblock css %}
+
+{% block content %}
+
+  <!-- Header -->
+  <section class="container-fluid text-center mt-3">
+    <div class="row py-lg-5">
+      <div class="col-lg-6 col-md-8 mx-auto">
+
+        <!-- Title -->
+        <h1 class="fw-light">Movie Listing @ GV Cinema</h1>
+        <p class="lead text-body-secondary">
+          Welcome to GV Cinema, your go-to place for the latest blockbusters and classic films.
+        </p>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Content -->
+  <div class="album py-5 px-4 bg-body-tertiary">
+    <div class="container" style="min-height:900px">
+
+      <!-- Title -->
+      <div class="d-flex border-3 border-bottom pb-3 mb-3">
+        <h1>List Genre</h1>
+
+        <!-- Search Input -->
+        <form method="GET" class="ms-auto p-2 d-grid gap-2 d-md-flex justify-content-md-end">
+          <div class="hstack gap-3">
+            <input class="form-control me-auto" type="text" placeholder="search" id="search" name="search">
+            <button type="submit" class="btn btn-outline-success">Search</button>
+            <div class="vr"></div>
+            <button type="submit" class="btn btn-outline-danger" id="btn-reset-search" style="display:none;">Reset</button>
+          </div>
+        </form>
+
+      </div>
+
+      {% if not list_genre %}
+        <div class="alert alert-info" role="alert">
+          <h4 class="alert-heading"><i class="bi bi-search"></i> No data found...</h4>
+          <p class="h6 bold">We're sorry. Nothing to do Here!</p>
+          <hr>
+          <p class="mb-0">GV Cinema</p>
+        </div>
+      {% endif %}
+
+      <!-- Form Add Genre -->
+      <form method="POST" class="p-2" enctype="multipart/form-data" id="AddGenre">
+        {% csrf_token %}
+
+        <!-- Btn Modal -->
+        <div class="align-self-center">
+          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addgen">Add Genre</button>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="addgen" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="addgenLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="addgenLabel">Add New Genre</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="input-group">
+                  <span class="input-group-text" id="inputGroup-addgen">Name</span>
+                  {{form_create.name}}
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary col-2" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary col-2" id="BtnAdd" name="btn_action" value="add_genre">Add</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </form>
+
+      <!-- Content -->
+      <div class="table-responsive py-3">
+
+        <!-- Table -->
+        <table class="table table-striped table-bordered">
+
+          <!-- Head -->
+          <thead>
+            <tr class="text-center">
+              <th scope="col" style="width:5%">no</th>
+              <th scope="col">Name</th>
+              <th scope="col" colspan="3">Action</th>
+            </tr>
+          </thead>
+
+          <!-- body -->
+          <tbody>
+            <form method="POST" class="p-2" enctype="multipart/form-data" id="UpdateGenre">
+              {% csrf_token %}
+              {% for genre in list_genre %}
+                <tr>
+                  <td class="text-end">{{forloop.counter0|add:list_genre.start_index}}</td>
+                  <td>{{genre.name}}</td>
+
+                  <!-- Update -->
+                  <td class="text-center" style="border-right:none;border-left:none">
+
+                    <!-- Action -->
+                    <button class="btn btn-outline-primary btn-sm" href="" type="button" data-bs-toggle="modal" data-bs-target="#updateGenre{{forloop.counter0|add:list_genre.start_index}}">Update</button>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="updateGenre{{forloop.counter0|add:list_genre.start_index}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="updateGenreLabel{{forloop.counter0|add:list_genre.start_index}}" aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="updateGenreLabel{{forloop.counter0|add:list_genre.start_index}}">Update Genre</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <div class="input-group mb-3">
+                              <span class="input-group-text" id="update_genre_{{genre.id}}">Name</span>
+                              <input type="text" class="form-control" name="update_genre_{{genre.id}}" value="{{genre.name}}">
+                            </div>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary col-2" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary col-2" id="BtnUpdate" name="btn_action" value="update_genre_{{genre.id}}">Update</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </td>
+
+                  <!-- Delete -->
+                  <td class="text-center" style="border-left:none">
+
+                    <!-- Action -->
+                    <button class="btn btn-outline-danger btn-sm" href="" type="button" data-bs-toggle="modal" data-bs-target="#deleteGenre{{forloop.counter0|add:list_genre.start_index}}">Delete</button>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="deleteGenre{{forloop.counter0|add:list_genre.start_index}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteGenreLabel{{forloop.counter0|add:list_genre.start_index}}" aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="deleteGenreLabel{{forloop.counter0|add:list_genre.start_index}}">Delete Genre</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            Are you sure to Delete this Genre?
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary col-2" data-bs-dismiss="modal">Close</button>
+                            <a class="btn btn btn-danger col-2" href="{% url 'movies:delete-genre' genre.id %}" type="button">Yes</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </td>
+
+                </tr>
+              {% endfor %}
+            </form>
+          </tbody>
+
+        </table>
+
+        <!-- Pagination -->
+        <nav aria-label="Page navigation">
+          <ul class="pagination justify-content-center">
+          {% if list_genre.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ list_genre.previous_page_number }}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+          {% else %}
+            <li class="page-item disabled">
+              <a class="page-link" href="#" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+          {% endif %}
+
+          {% for i in list_genre.paginator.page_range %}
+            {% if list_genre.number == i %}
+            <li class="page-item active">
+              <a class="page-link" href="?page={{ i }}">{{ list_genre.number }}</a>
+            </li>
+            {% elif i > list_genre.number|add:'-3' and i < list_genre.number|add:'3' %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+            </li>
+            {% endif %}
+          {% endfor %}
+
+          {% if list_genre.paginator.num_pages > list_genre.number|add:'3' %}
+            <li><a class="page-link" href="?page={{ list_genre.number|add:'3' }}">&hellip;</a></li>
+          {% endif %}
+
+          {% if list_genre.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ list_genre.next_page_number }}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          {% else %}
+            <li class="page-item disabled">
+              <a class="page-link" href="#" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          {% endif %}
+          </ul>
+        </nav>
+
+      </div>
+
+    </div>
+  </div>
+{% endblock content %}
+
+
+{% block js %}
+  {{block.super}}
+  <script>
+    // Show Reset Search button if search has value
+    var searchInput = document.getElementById('search');
+    var resetButton = document.getElementById('btn-reset-search');
+
+    // Function to check if search parameter has value
+    function checkSearchInput() {
+      if (searchInput.value.length > 0) {
+        resetButton.style.display = 'inline-block'; // Show reset button
+      } else {
+        resetButton.style.display = 'none'; // Hide reset button if no input
+      }
+    }
+
+    // Event listener to show or hide reset button as user types
+    searchInput.addEventListener('input', checkSearchInput);
+
+    // Reset Search when reset button is clicked
+    resetButton.addEventListener('click', function() {
+      searchInput.value = ''; // Clear the search input
+      resetButton.style.display = 'none'; // Hide the reset button
+    });
+
+    // Check search parameter after page loads (for reload or page refresh)
+    window.addEventListener('load', function() {
+      // Check if there's a search parameter in the URL and set the input value accordingly
+      var urlParams = new URLSearchParams(window.location.search);
+      var searchParam = urlParams.get('search'); // Get the search from the URL
+
+      if (searchParam) {
+        searchInput.value = searchParam; // Set the input value to the search from the URL
+        resetButton.style.display = 'inline-block'; // Show reset button if there is a search
+      }
+
+      checkSearchInput(); // Ensure the reset button visibility is updated
+    });
+  </script>
+{% endblock js %}

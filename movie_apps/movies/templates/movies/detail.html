@@ -1,0 +1,90 @@
+{% extends 'movies/base.html' %}
+{% load static %}
+{% load genre %}
+
+{% block css %}
+{% endblock css %}
+
+{% block content %}
+
+  <!-- Header -->
+  <section class="container-fluid text-center mt-3">
+    <div class="row py-lg-5">
+      <div class="col-lg-6 col-md-8 mx-auto">
+
+        <!-- Title -->
+        <h1 class="fw-light">Movie Listing @ GV Cinema</h1>
+        <p class="lead text-body-secondary">
+          Welcome to GV Cinema, your go-to place for the latest blockbusters and classic films.
+        </p>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Content -->
+  <div class="album py-5 px-4 bg-body-tertiary">
+    <div class="container-fluid" style="min-height:900px">
+
+      <!-- Title -->
+      <div class="border-3 border-bottom pb-3 mb-3">
+        <button class="btn btn-outline-primary float-end col-2" id="btnBack">back</button>
+        <h1>{{movie.name}}</h1>
+        <p>({{movie.mpaaRating}})</p>
+      </div>
+
+      <!-- Movies Description -->
+      <div class="row g-0 border rounded overflow-hidden flex-md-row mt-5 mb-4 shadow-sm h-md-250 position-relative">
+
+        <!-- Thumbnail -->
+        <div class="col-auto d-lg-block mx-auto">
+          <img src="{{movie.imgPath.url}}" class="bd-placeholder-img img-fluid" style="width:450px;" alt="{{movie.name}}">
+        </div>
+
+        <!-- Info -->
+        <div class="col p-4 d-flex flex-column position-static mb-4">
+          <h3 class="mb-0">Details</h3>
+          <ul class="list-inline">
+            <li class="list-inline-item col-4">Genre</li>
+            <li class="list-inline-item">:</li>
+            <li class="list-inline-item">
+              {{movie_genre|list_genre}}
+            </li>
+          </ul>
+          <ul class="list-inline">
+            <li class="list-inline-item col-4">Language</li>
+            <li class="list-inline-item">:</li>
+            <li class="list-inline-item">{{movie.language}}</li>
+          </ul>
+          <ul class="list-inline">
+            <li class="list-inline-item col-4">Duration</li>
+            <li class="list-inline-item">:</li>
+            <li class="list-inline-item">{{movie.duration}} minutes</li>
+          </ul>
+          <ul class="list-inline">
+            <li class="list-inline-item col-4">User Rating</li>
+            <li class="list-inline-item">:</li>
+            <li class="list-inline-item">{{movie.userRating}}</li>
+          </ul>
+          <h3 class="mb-0">Synopsis</h3>
+          <p class="">{{movie.description}}</p>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+{% endblock content %}
+
+
+{% block js %}
+  {{block.super}}
+  <script>
+    // Get the back button element
+    document.getElementById('btnBack').addEventListener('click', function() {
+      // Go back in the browser history
+      window.history.back();
+    });
+  </script>
+{% endblock js %}
