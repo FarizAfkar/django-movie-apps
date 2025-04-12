@@ -189,7 +189,9 @@ Now, open http://127.0.0.1:8000/ in your browser.
 
 ## 🔗 Screenshots
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+![App Screenshot](movie.png)
+
+![App Screenshot](movie-detail.png)
 
 
 ## 🔗 License
